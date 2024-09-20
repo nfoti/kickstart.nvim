@@ -944,13 +944,13 @@ require('lazy').setup({
         git_ignored = false,
       },
     },
-    config = function()
+    config = function(_, opts)
       -- NOTE: disable netrw as recommended by nvim-tree
       vim.g.loaded_netrw = 1
       vim.g.loaded_netrwPlugin = 1
 
       -- Set up nvim-tree
-      require('nvim-tree').setup {}
+      require('nvim-tree').setup(opts)
     end,
   },
 
