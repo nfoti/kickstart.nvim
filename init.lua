@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
-vim.opt.relativenumber = true
+--vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -661,7 +661,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'ruff' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -790,7 +790,10 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'zenbones-theme/zenbones.nvim',
+    --'zenbones-theme/zenbones.nvim',
+    --'savq/melange-nvim',
+    --'NLKNguyen/papercolor-theme',
+    'rebelot/kanagawa.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     dependencies = { 'rktjmp/lush.nvim' },
     init = function()
@@ -798,10 +801,13 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.opt.termguicolors = true
-      vim.cmd.colorscheme 'zenbones'
+      --vim.cmd.colorscheme 'zenbones'
+      --vim.cmd.colorscheme 'melange'
+      --vim.cmd.colorscheme 'PaperColor'
+      vim.cmd.colorscheme 'kanagawa-dragon'
 
       -- You can configure highlights by doing something like:
-      --vim.cmd.hi 'Comment gui=none'
+      vim.cmd.hi 'Comment gui=none'
     end,
   },
 
@@ -825,22 +831,6 @@ require('lazy').setup({
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
-
-      -- TODO: Remove if stick with lualine
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -890,6 +880,15 @@ require('lazy').setup({
       inactive_winbar = {},
       extensions = { 'nvim-tree' },
     },
+  },
+  { -- Nice and simple bufferline
+    'akinsho/bufferline.nvim',
+    version = '*',
+    dependencies = 'nvim-tree/nvim-web-devicons',
+    config = function(_, opts)
+      vim.opt.termguicolors = true
+      require('bufferline').setup {}
+    end,
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -953,7 +952,18 @@ require('lazy').setup({
       require('nvim-tree').setup(opts)
     end,
   },
-
+  {
+    'EvWilson/slimux.nvim',
+    config = function()
+      local slimux = require 'slimux'
+      slimux.setup {
+        target_socket = slimux.get_tmux_socket(),
+        target_pane = string.format('%s.2', slimux.get_tmux_window()),
+      }
+      vim.keymap.set('v', '<leader>r', slimux.send_highlighted_text, { desc = 'Send currently highlighted text to configured tmux pane' })
+      vim.keymap.set('n', '<leader>r', slimux.send_paragraph_text, { desc = 'Send paragraph under cursor to configured tmux pane' })
+    end,
+  },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
